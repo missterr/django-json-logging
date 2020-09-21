@@ -4,6 +4,31 @@ import orjson
 
 from django_json_logging import settings
 
+RECORD_ATTRIBUTES = {
+    'args',
+    'asctime',
+    'created',
+    'exc_info',
+    'exc_text',
+    'filename',
+    'funcName',
+    'levelname',
+    'levelno',
+    'lineno',
+    'message',
+    'module',
+    'msecs',
+    'msg',
+    'name',
+    'pathname',
+    'process',
+    'processName',
+    'relativeCreated',
+    'stack_info',
+    'thread',
+    'threadName',
+}
+
 
 class JSONFormatter(Formatter):
     """JSON log formatter."""
@@ -17,6 +42,12 @@ class JSONFormatter(Formatter):
         The library orjson returns a bytes not an str.
         """
         return str(orjson.dumps(dict_record), settings.LOGGING_ENCODING)
+
+    @staticmethod
+    def get_extra(record: LogRecord) -> dict:
+        """Determines and separate extra fields."""
+        extra_names = set(record.__dict__.keys()).difference(RECORD_ATTRIBUTES)
+        return {name: getattr(record, name) for name in extra_names}
 
     @staticmethod
     def add_user(record: LogRecord) -> LogRecord:
@@ -41,13 +72,12 @@ class JSONFormatter(Formatter):
         Particular fields can be configured in settings.LOGGING_FIELDS.
         Request field is excluded because it can't be json-encoded directly.
         """
-        dict_record = {'message': message, 'app_name': settings.LOGGING_APP_NAME}
-        dict_record.update({
-            field: getattr(record, field) for field in settings.LOGGING_FIELDS
-        })
+        extra = self.get_extra(record)
+        default = {'message': message, 'app_name': settings.LOGGING_APP_NAME}
+        builtin = {field: getattr(record, field) for field in settings.LOGGING_FIELDS}
+        dict_record = {**extra, **builtin, **default}
 
-        if 'request' in dict_record:
-            json_record.pop('request', None)
+        dict_record.pop('request', None)
 
         if record.exc_info:
             dict_record['exc_info'] = self.formatException(record.exc_info)
