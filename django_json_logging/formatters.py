@@ -41,7 +41,11 @@ class JSONFormatter(Formatter):
 
         The library orjson returns a bytes not an str.
         """
-        return str(orjson.dumps(dict_record), settings.LOGGING_ENCODING)
+        if settings.DEVELOP:
+            json = orjson.dumps(dict_record, option=orjson.OPT_INDENT_2)
+        else:
+            json = orjson.dumps(dict_record)
+        return str(json, settings.LOGGING_ENCODING)
 
     @staticmethod
     def get_extra(record: LogRecord) -> dict:
