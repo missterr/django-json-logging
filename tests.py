@@ -17,6 +17,7 @@ class JsonFormatterTestCase(TestCase):
         self.logger.addHandler(handler)
 
     def test_write(self):
+        """Common writing with the extra fields"""
         self.logger.error('Something bad happened', extra={'error_code': 'xxx'})
         result = json.loads(stream.getvalue())
         for key in settings.LOGGING_FIELDS:

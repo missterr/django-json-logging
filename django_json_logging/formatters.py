@@ -1,6 +1,6 @@
-from logging import Formatter, LogRecord
-
 import orjson
+import traceback
+from logging import Formatter, LogRecord
 
 from django_json_logging import settings
 
@@ -80,6 +80,9 @@ class JSONFormatter(Formatter):
         dict_record.pop('request', None)
 
         if record.exc_info:
-            dict_record['exc_info'] = self.formatException(record.exc_info)
+            if settings.DEVELOP:
+                traceback.print_exception(*record.exc_info)
+            else:
+                extra['exc_info'] = self.formatException(record.exc_info)
 
         return dict_record
