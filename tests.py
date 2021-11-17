@@ -2,8 +2,8 @@ import json
 import logging
 from io import StringIO
 from unittest import TestCase
-from django_json_logging import settings
 
+from django_json_logging import settings
 from django_json_logging.formatters import JSONFormatter
 
 stream = StringIO()
