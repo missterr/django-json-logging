@@ -1,8 +1,8 @@
-import orjson
 import traceback
 from logging import Formatter, LogRecord
 
 from django_json_logging import settings
+from django_json_logging.serializers import get_serializer
 
 RECORD_ATTRIBUTES = {
     'args',
@@ -34,18 +34,7 @@ class JSONFormatter(Formatter):
     """JSON log formatter."""
 
     datefmt = settings.LOGGING_DATETIME_FORMAT
-
-    @staticmethod
-    def to_json(dict_record: dict) -> str:
-        """Converts record dict to a JSON string.
-
-        The library orjson returns a bytes not an str.
-        """
-        if settings.DEVELOP:
-            json = orjson.dumps(dict_record, option=orjson.OPT_INDENT_2)
-        else:
-            json = orjson.dumps(dict_record)
-        return str(json, settings.LOGGING_ENCODING)
+    serializer = get_serializer()
 
     @staticmethod
     def get_extra(record: LogRecord) -> dict:
@@ -68,7 +57,7 @@ class JSONFormatter(Formatter):
         record = self.add_user(record)
         message = record.getMessage()
         dict_record = self.to_dict(message, record)
-        return self.to_json(dict_record)
+        return self.serializer.to_json(dict_record)
 
     def to_dict(self, message: str, record: LogRecord) -> dict:
         """Log record JSON formatter.
