@@ -1,4 +1,6 @@
 import json
+from typing import Callable
+from functools import partial, lru_cache
 
 from django_json_logging import settings
 
@@ -15,19 +17,40 @@ except ImportError:  # pragma: nocover
 
 class ORJsonSerializer:
 
+    options = {
+        "LOGGING_OPT_INDENT_2": orjson.OPT_INDENT_2,
+        "LOGGING_OPT_NON_STR_KEYS": orjson.OPT_NON_STR_KEYS,
+        "LOGGING_OPT_APPEND_NEWLINE": orjson.OPT_APPEND_NEWLINE,
+        "LOGGING_OPT_NAIVE_UTC": orjson.OPT_NAIVE_UTC,
+        "LOGGING_OPT_OMIT_MICROSECONDS": orjson.OPT_OMIT_MICROSECONDS,
+        "LOGGING_OPT_PASSTHROUGH_DATACLASS": orjson.OPT_PASSTHROUGH_DATACLASS,
+        "LOGGING_OPT_PASSTHROUGH_DATETIME": orjson.OPT_PASSTHROUGH_DATETIME,
+        "LOGGING_OPT_SERIALIZE_DATACLASS": orjson.OPT_SERIALIZE_DATACLASS,
+        "LOGGING_OPT_SERIALIZE_NUMPY": orjson.OPT_SERIALIZE_NUMPY,
+        "LOGGING_OPT_SERIALIZE_UUID": orjson.OPT_SERIALIZE_UUID,
+        "LOGGING_OPT_SORT_KEYS": orjson.OPT_SORT_KEYS,
+        "LOGGING_OPT_STRICT_INTEGER": orjson.OPT_STRICT_INTEGER,
+        "LOGGING_OPT_UTC_Z": orjson.OPT_UTC_Z
+    }
+
     @staticmethod
-    def to_json(dict_record: dict) -> str:
+    @lru_cache()
+    def dumps() -> Callable:
+        option = False
+        for key, val in ORJsonSerializer.options.items():
+            if getattr(settings, key):
+                option = option | ORJsonSerializer.options[key]
+        return partial(orjson.dumps, option=option) if option else orjson.dumps
+
+    @classmethod
+    def to_json(cls, dict_record: dict) -> str:
         """Converts record dict to a JSON string.
 
         The library orjson returns a bytes not an str.
         """
         assert orjson is not None, 'orjson must be installed to use ORJsonSerializer'
 
-        if settings.DEVELOP:
-            json = orjson.dumps(dict_record, option=orjson.OPT_INDENT_2)
-        else:
-            json = orjson.dumps(dict_record)
-        return str(json, settings.LOGGING_ENCODING)
+        return str(cls.dumps()(dict_record), settings.LOGGING_ENCODING)
 
 
 class UJsonSerializer:
