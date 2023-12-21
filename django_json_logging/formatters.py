@@ -45,7 +45,7 @@ class JSONFormatter(Formatter):
     @staticmethod
     def add_user(record: LogRecord) -> LogRecord:
         """Adds `user` property from request to a LogRecord if exists."""
-        if getattr(record, 'request', None):
+        if hasattr(record, 'request') and hasattr(record.request, "user"):
             setattr(record, settings.LOGGING_USER_PROPERTY_NAME, str(record.request.user))
         return record
 
