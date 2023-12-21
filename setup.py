@@ -1,8 +1,8 @@
 from setuptools import setup
 
 extras_require = {
-    "orjson": ["orjson>=3.4.3"],
-    "ujson": ["ujson>=4.2.0"],
+    "orjson": ["orjson>=3.9.10"],
+    "ujson": ["ujson>=5.9.0"],
 }
 
 setup()
