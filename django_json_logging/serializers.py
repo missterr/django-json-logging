@@ -1,6 +1,6 @@
 import json
+from functools import lru_cache, partial
 from typing import Callable
-from functools import partial, lru_cache
 
 from django_json_logging import settings
 
@@ -16,7 +16,6 @@ except ImportError:  # pragma: nocover
 
 
 class ORJsonSerializer:
-
     options = {
         "LOGGING_OPT_INDENT_2": orjson.OPT_INDENT_2,
         "LOGGING_OPT_NON_STR_KEYS": orjson.OPT_NON_STR_KEYS,
@@ -30,7 +29,7 @@ class ORJsonSerializer:
         "LOGGING_OPT_SERIALIZE_UUID": orjson.OPT_SERIALIZE_UUID,
         "LOGGING_OPT_SORT_KEYS": orjson.OPT_SORT_KEYS,
         "LOGGING_OPT_STRICT_INTEGER": orjson.OPT_STRICT_INTEGER,
-        "LOGGING_OPT_UTC_Z": orjson.OPT_UTC_Z
+        "LOGGING_OPT_UTC_Z": orjson.OPT_UTC_Z,
     }
 
     @staticmethod
@@ -48,7 +47,7 @@ class ORJsonSerializer:
 
         The library orjson returns a bytes not an str.
         """
-        assert orjson is not None, 'orjson must be installed to use ORJsonSerializer'
+        assert orjson is not None, "orjson must be installed to use ORJsonSerializer"
 
         return str(cls.dumps()(dict_record), settings.LOGGING_ENCODING)
 
@@ -60,7 +59,7 @@ class UJsonSerializer:
 
         The library ujson returns a bytes not an str.
         """
-        assert ujson is not None, 'ujson must be installed to use UJsonSerializer'
+        assert ujson is not None, "ujson must be installed to use UJsonSerializer"
 
         if settings.DEVELOP:
             json = ujson.dumps(dict_record, ensure_ascii=False, indent=2)
@@ -85,9 +84,9 @@ class JsonSerializer:
 
 def get_serializer():
     mapping = {
-        'orjson': ORJsonSerializer,
-        'ujson': UJsonSerializer,
-        'json': JsonSerializer,
+        "orjson": ORJsonSerializer,
+        "ujson": UJsonSerializer,
+        "json": JsonSerializer,
     }
     assert settings.LOGGING_SERIALIZER in mapping, 'LOGGING_SERIALIZER must be "orjson", "ujson" or "json"'
     return mapping[settings.LOGGING_SERIALIZER]

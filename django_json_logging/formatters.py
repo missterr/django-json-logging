@@ -5,28 +5,28 @@ from django_json_logging import settings
 from django_json_logging.serializers import get_serializer
 
 RECORD_ATTRIBUTES = {
-    'args',
-    'asctime',
-    'created',
-    'exc_info',
-    'exc_text',
-    'filename',
-    'funcName',
-    'levelname',
-    'levelno',
-    'lineno',
-    'message',
-    'module',
-    'msecs',
-    'msg',
-    'name',
-    'pathname',
-    'process',
-    'processName',
-    'relativeCreated',
-    'stack_info',
-    'thread',
-    'threadName',
+    "args",
+    "asctime",
+    "created",
+    "exc_info",
+    "exc_text",
+    "filename",
+    "funcName",
+    "levelname",
+    "levelno",
+    "lineno",
+    "message",
+    "module",
+    "msecs",
+    "msg",
+    "name",
+    "pathname",
+    "process",
+    "processName",
+    "relativeCreated",
+    "stack_info",
+    "thread",
+    "threadName",
 }
 
 
@@ -45,13 +45,13 @@ class JSONFormatter(Formatter):
     @staticmethod
     def add_user(record: LogRecord) -> LogRecord:
         """Adds `user` property from request to a LogRecord if exists."""
-        if hasattr(record, 'request') and hasattr(record.request, "user"):
+        if hasattr(record, "request") and hasattr(record.request, "user"):
             setattr(record, settings.LOGGING_USER_PROPERTY_NAME, str(record.request.user))
         return record
 
     def format(self, record: LogRecord) -> str:
         """Format the specified record as text."""
-        if 'asctime' in settings.LOGGING_FIELDS:
+        if "asctime" in settings.LOGGING_FIELDS:
             record.asctime = self.formatTime(record, self.datefmt)
 
         record = self.add_user(record)
@@ -66,16 +66,16 @@ class JSONFormatter(Formatter):
         Request field is excluded because it can't be json-encoded directly.
         """
         extra = self.get_extra(record)
-        default = {'message': message, 'app_name': settings.LOGGING_APP_NAME}
+        default = {"message": message, "app_name": settings.LOGGING_APP_NAME}
         builtin = {field: getattr(record, field) for field in settings.LOGGING_FIELDS}
         dict_record = {**extra, **builtin, **default}
 
-        dict_record.pop('request', None)
+        dict_record.pop("request", None)
 
         if record.exc_info:
             if settings.DEVELOP:
                 traceback.print_exception(*record.exc_info)
             else:
-                extra['exc_info'] = self.formatException(record.exc_info)
+                extra["exc_info"] = self.formatException(record.exc_info)
 
         return dict_record
