@@ -1,0 +1,7 @@
+[tool.black]
+exclude = '\w+/migrations/\w+'
+line-length = 120
+
+[tool.isort]
+line_length = 120
+profile = "black"
