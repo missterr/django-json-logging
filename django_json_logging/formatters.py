@@ -42,19 +42,11 @@ class JSONFormatter(Formatter):
         extra_names = set(record.__dict__.keys()).difference(RECORD_ATTRIBUTES)
         return {name: getattr(record, name) for name in extra_names}
 
-    @staticmethod
-    def add_user(record: LogRecord) -> LogRecord:
-        """Adds `user` property from request to a LogRecord if exists."""
-        if hasattr(record, "request") and hasattr(record.request, "user"):
-            setattr(record, settings.LOGGING_USER_PROPERTY_NAME, str(record.request.user))
-        return record
-
     def format(self, record: LogRecord) -> str:
         """Format the specified record as text."""
         if "asctime" in settings.LOGGING_FIELDS:
             record.asctime = self.formatTime(record, self.datefmt)
 
-        record = self.add_user(record)
         message = record.getMessage()
         dict_record = self.to_dict(message, record)
         return self.serializer.to_json(dict_record)
