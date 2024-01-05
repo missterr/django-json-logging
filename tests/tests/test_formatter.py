@@ -3,7 +3,8 @@ import logging
 from io import StringIO
 from unittest import TestCase
 
-from django_json_logging import settings
+from django.conf import settings
+
 from django_json_logging.formatters import JSONFormatter
 
 stream = StringIO()
@@ -12,9 +13,9 @@ stream = StringIO()
 class JsonFormatterTestCase(TestCase):
     def setUp(self) -> None:
         self.logger = logging.getLogger("test-json-logger")
-        handler = logging.StreamHandler(stream=stream)
-        handler.setFormatter(JSONFormatter())
-        self.logger.addHandler(handler)
+        self.handler = logging.StreamHandler(stream=stream)
+        self.handler.setFormatter(JSONFormatter())
+        self.logger.addHandler(self.handler)
 
     def test_write(self):
         """Common writing with the extra fields"""

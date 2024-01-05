@@ -1,6 +1,6 @@
 import json
 from functools import lru_cache, partial
-from typing import Callable
+from typing import Callable, Union
 
 from django_json_logging import settings
 
@@ -62,10 +62,10 @@ class UJsonSerializer:
         assert ujson is not None, "ujson must be installed to use UJsonSerializer"
 
         if settings.DEVELOP:
-            json = ujson.dumps(dict_record, ensure_ascii=False, indent=2)
+            json_string = ujson.dumps(dict_record, ensure_ascii=False, indent=2)
         else:
-            json = ujson.dumps(dict_record, ensure_ascii=False)
-        return str(json, settings.LOGGING_ENCODING)
+            json_string = ujson.dumps(dict_record, ensure_ascii=False)
+        return str(json_string, settings.LOGGING_ENCODING)
 
 
 class JsonSerializer:
@@ -82,7 +82,7 @@ class JsonSerializer:
             return json.dumps(dict_record, ensure_ascii=False)
 
 
-def get_serializer():
+def get_serializer() -> Union[ORJsonSerializer, UJsonSerializer, JsonSerializer]:
     mapping = {
         "orjson": ORJsonSerializer,
         "ujson": UJsonSerializer,
