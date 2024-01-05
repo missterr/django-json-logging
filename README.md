@@ -4,7 +4,7 @@ This library provides the ability of converting django logs to JSON.
 # Installation
 Using standard Json library:
 ```shell
-pip install git+https://github.com/missterr/django-json-logging.git
+pip install django-json-logger
 ```
 
 ### Custom json libraries
@@ -12,14 +12,14 @@ pip install git+https://github.com/missterr/django-json-logging.git
 #### Orjson
 To use [Orjson](https://github.com/ijl/orjson):
 ```shell
-pip install git+https://github.com/missterr/django-json-logging.git#egg=django-json-logging[orjson]
+pip install django-json-logger[orjson]
 ```
 and add to Django settings `LOGGING_SERIALIZER="orjson"`
 
 #### Ujson
 To use [Ujson](https://github.com/ultrajson/ultrajson):
 ```shell
-pip install git+https://github.com/missterr/django-json-logging.git#egg=django-json-logging[ujson]
+pip install django-json-logger[ujson]
 ```
 and add to Django settings `LOGGING_SERIALIZER="ujson"`
 
