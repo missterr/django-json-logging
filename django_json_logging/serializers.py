@@ -17,7 +17,7 @@ except ImportError:  # pragma: nocover
 
 class ORJsonSerializer:
     options = {
-        "LOGGING_OPT_INDENT_2": getattr(orjson, "OPT_INDENT_2", 0),
+        "LOGGING_JSON_INDENT": getattr(orjson, "OPT_INDENT_2", 0) if settings.LOGGING_JSON_INDENT else 0,
         "LOGGING_OPT_NON_STR_KEYS": getattr(orjson, "OPT_NON_STR_KEYS", 0),
         "LOGGING_OPT_APPEND_NEWLINE": getattr(orjson, "OPT_APPEND_NEWLINE", 0),
         "LOGGING_OPT_NAIVE_UTC": getattr(orjson, "OPT_NAIVE_UTC", 0),
@@ -48,7 +48,6 @@ class ORJsonSerializer:
         The library orjson returns a bytes not an str.
         """
         assert orjson is not None, "orjson must be installed to use ORJsonSerializer"
-
         return str(cls.dumps()(dict_record), settings.LOGGING_ENCODING)
 
 
@@ -60,12 +59,8 @@ class UJsonSerializer:
         The library ujson returns a bytes not an str.
         """
         assert ujson is not None, "ujson must be installed to use UJsonSerializer"
-
-        if settings.DEVELOP:
-            json_string = ujson.dumps(dict_record, ensure_ascii=False, indent=2)
-        else:
-            json_string = ujson.dumps(dict_record, ensure_ascii=False)
-        return str(json_string, settings.LOGGING_ENCODING)
+        options = {"escape_forward_slashes": False, "ensure_ascii": False, "indent": settings.LOGGING_JSON_INDENT}
+        return ujson.dumps(dict_record, **options)
 
 
 class JsonSerializer:
@@ -75,18 +70,17 @@ class JsonSerializer:
 
         Using standard json library.
         """
-
-        if settings.DEVELOP:
-            return json.dumps(dict_record, ensure_ascii=False, indent=2)
-        else:
-            return json.dumps(dict_record, ensure_ascii=False)
+        options = {"ensure_ascii": False, "indent": settings.LOGGING_JSON_INDENT}
+        return json.dumps(dict_record, **options)
 
 
-def get_serializer() -> Union[ORJsonSerializer, UJsonSerializer, JsonSerializer]:
+def get_serializer(
+    serializer: str = settings.LOGGING_SERIALIZER,
+) -> Union[ORJsonSerializer, UJsonSerializer, JsonSerializer]:
     mapping = {
         "orjson": ORJsonSerializer,
         "ujson": UJsonSerializer,
         "json": JsonSerializer,
     }
-    assert settings.LOGGING_SERIALIZER in mapping, 'LOGGING_SERIALIZER must be "orjson", "ujson" or "json"'
-    return mapping[settings.LOGGING_SERIALIZER]
+    assert serializer in mapping, 'LOGGING_SERIALIZER must be "orjson", "ujson" or "json"'
+    return mapping[serializer]

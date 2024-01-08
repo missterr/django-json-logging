@@ -33,8 +33,10 @@ RECORD_ATTRIBUTES = {
 class JSONFormatter(Formatter):
     """JSON log formatter."""
 
-    datefmt = settings.LOGGING_DATETIME_FORMAT
-    serializer = get_serializer()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.datefmt = settings.LOGGING_DATETIME_FORMAT
+        self.serializer = get_serializer()
 
     @staticmethod
     def get_extra(record: LogRecord) -> dict:

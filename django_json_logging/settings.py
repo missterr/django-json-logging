@@ -8,12 +8,13 @@ except ImproperlyConfigured:
 
 
 LOGGING_APP_NAME = getattr(settings, "LOGGING_APP_NAME", "Default")
-assert LOGGING_APP_NAME, "LOGGING_APP_NAME settings parameter must be defined"
 
 LOGGING_ENCODING = getattr(settings, "LOGGING_ENCODING", "utf-8")
 LOGGING_SERIALIZER = getattr(settings, "LOGGING_SERIALIZER", "json")
+LOGGING_JSON_INDENT = getattr(settings, "LOGGING_JSON_INDENT", 0)
+assert isinstance(LOGGING_JSON_INDENT, int), "LOGGING_JSON_INDENT should be an int"
+
 LOGGING_DATETIME_FORMAT = getattr(settings, "LOGGING_DATETIME_FORMAT", "%Y-%m-%d %H:%M:%S.%f")
-LOGGING_USER_PROPERTY_NAME = getattr(settings, "LOGGING_USER_PROPERTY_NAME", "user")
 LOGGING_FIELDS = getattr(
     settings, "LOGGING_FIELDS", ("levelname", "name", "module", "process", "thread", "pathname", "created")
 )
