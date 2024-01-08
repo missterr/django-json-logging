@@ -17,19 +17,19 @@ except ImportError:  # pragma: nocover
 
 class ORJsonSerializer:
     options = {
-        "LOGGING_OPT_INDENT_2": orjson.OPT_INDENT_2,
-        "LOGGING_OPT_NON_STR_KEYS": orjson.OPT_NON_STR_KEYS,
-        "LOGGING_OPT_APPEND_NEWLINE": orjson.OPT_APPEND_NEWLINE,
-        "LOGGING_OPT_NAIVE_UTC": orjson.OPT_NAIVE_UTC,
-        "LOGGING_OPT_OMIT_MICROSECONDS": orjson.OPT_OMIT_MICROSECONDS,
-        "LOGGING_OPT_PASSTHROUGH_DATACLASS": orjson.OPT_PASSTHROUGH_DATACLASS,
-        "LOGGING_OPT_PASSTHROUGH_DATETIME": orjson.OPT_PASSTHROUGH_DATETIME,
-        "LOGGING_OPT_SERIALIZE_DATACLASS": orjson.OPT_SERIALIZE_DATACLASS,
-        "LOGGING_OPT_SERIALIZE_NUMPY": orjson.OPT_SERIALIZE_NUMPY,
-        "LOGGING_OPT_SERIALIZE_UUID": orjson.OPT_SERIALIZE_UUID,
-        "LOGGING_OPT_SORT_KEYS": orjson.OPT_SORT_KEYS,
-        "LOGGING_OPT_STRICT_INTEGER": orjson.OPT_STRICT_INTEGER,
-        "LOGGING_OPT_UTC_Z": orjson.OPT_UTC_Z,
+        "LOGGING_JSON_INDENT": getattr(orjson, "OPT_INDENT_2", 0) if settings.LOGGING_JSON_INDENT else 0,
+        "LOGGING_OPT_NON_STR_KEYS": getattr(orjson, "OPT_NON_STR_KEYS", 0),
+        "LOGGING_OPT_APPEND_NEWLINE": getattr(orjson, "OPT_APPEND_NEWLINE", 0),
+        "LOGGING_OPT_NAIVE_UTC": getattr(orjson, "OPT_NAIVE_UTC", 0),
+        "LOGGING_OPT_OMIT_MICROSECONDS": getattr(orjson, "OPT_OMIT_MICROSECONDS", 0),
+        "LOGGING_OPT_PASSTHROUGH_DATACLASS": getattr(orjson, "OPT_PASSTHROUGH_DATACLASS", 0),
+        "LOGGING_OPT_PASSTHROUGH_DATETIME": getattr(orjson, "OPT_PASSTHROUGH_DATETIME", 0),
+        "LOGGING_OPT_SERIALIZE_DATACLASS": getattr(orjson, "OPT_SERIALIZE_DATACLASS", 0),
+        "LOGGING_OPT_SERIALIZE_NUMPY": getattr(orjson, "OPT_SERIALIZE_NUMPY", 0),
+        "LOGGING_OPT_SERIALIZE_UUID": getattr(orjson, "OPT_SERIALIZE_UUID", 0),
+        "LOGGING_OPT_SORT_KEYS": getattr(orjson, "OPT_SORT_KEYS", 0),
+        "LOGGING_OPT_STRICT_INTEGER": getattr(orjson, "OPT_STRICT_INTEGER", 0),
+        "LOGGING_OPT_UTC_Z": getattr(orjson, "OPT_UTC_Z", 0),
     }
 
     @staticmethod
@@ -48,7 +48,6 @@ class ORJsonSerializer:
         The library orjson returns a bytes not an str.
         """
         assert orjson is not None, "orjson must be installed to use ORJsonSerializer"
-
         return str(cls.dumps()(dict_record), settings.LOGGING_ENCODING)
 
 
@@ -60,12 +59,8 @@ class UJsonSerializer:
         The library ujson returns a bytes not an str.
         """
         assert ujson is not None, "ujson must be installed to use UJsonSerializer"
-
-        if settings.DEVELOP:
-            json_string = ujson.dumps(dict_record, ensure_ascii=False, indent=2)
-        else:
-            json_string = ujson.dumps(dict_record, ensure_ascii=False)
-        return str(json_string, settings.LOGGING_ENCODING)
+        options = {"escape_forward_slashes": False, "ensure_ascii": False, "indent": settings.LOGGING_JSON_INDENT}
+        return ujson.dumps(dict_record, **options)
 
 
 class JsonSerializer:
@@ -75,18 +70,19 @@ class JsonSerializer:
 
         Using standard json library.
         """
+        options = {"ensure_ascii": False}
+        if settings.LOGGING_JSON_INDENT:
+            options.update(indent=settings.LOGGING_JSON_INDENT)
+        return json.dumps(dict_record, **options)
 
-        if settings.DEVELOP:
-            return json.dumps(dict_record, ensure_ascii=False, indent=2)
-        else:
-            return json.dumps(dict_record, ensure_ascii=False)
 
-
-def get_serializer() -> Union[ORJsonSerializer, UJsonSerializer, JsonSerializer]:
+def get_serializer(
+    serializer: str = settings.LOGGING_SERIALIZER,
+) -> Union[ORJsonSerializer, UJsonSerializer, JsonSerializer]:
     mapping = {
         "orjson": ORJsonSerializer,
         "ujson": UJsonSerializer,
         "json": JsonSerializer,
     }
-    assert settings.LOGGING_SERIALIZER in mapping, 'LOGGING_SERIALIZER must be "orjson", "ujson" or "json"'
-    return mapping[settings.LOGGING_SERIALIZER]
+    assert serializer in mapping, 'LOGGING_SERIALIZER must be "orjson", "ujson" or "json"'
+    return mapping[serializer]

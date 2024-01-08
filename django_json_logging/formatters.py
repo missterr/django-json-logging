@@ -18,7 +18,6 @@ RECORD_ATTRIBUTES = {
     "message",
     "module",
     "msecs",
-    "msg",
     "name",
     "pathname",
     "process",
@@ -33,8 +32,10 @@ RECORD_ATTRIBUTES = {
 class JSONFormatter(Formatter):
     """JSON log formatter."""
 
-    datefmt = settings.LOGGING_DATETIME_FORMAT
-    serializer = get_serializer()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.datefmt = settings.LOGGING_DATETIME_FORMAT
+        self.serializer = get_serializer()
 
     @staticmethod
     def get_extra(record: LogRecord) -> dict:
@@ -58,7 +59,7 @@ class JSONFormatter(Formatter):
         Request field is excluded because it can't be json-encoded directly.
         """
         extra = self.get_extra(record)
-        default = {"message": message, "app_name": settings.LOGGING_APP_NAME}
+        default = {"msg": message, "app_name": settings.LOGGING_APP_NAME}
         builtin = {field: getattr(record, field) for field in settings.LOGGING_FIELDS}
         dict_record = {**extra, **builtin, **default}
 
