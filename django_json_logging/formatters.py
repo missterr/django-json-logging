@@ -18,7 +18,6 @@ RECORD_ATTRIBUTES = {
     "message",
     "module",
     "msecs",
-    "msg",
     "name",
     "pathname",
     "process",
@@ -60,7 +59,7 @@ class JSONFormatter(Formatter):
         Request field is excluded because it can't be json-encoded directly.
         """
         extra = self.get_extra(record)
-        default = {"message": message, "app_name": settings.LOGGING_APP_NAME}
+        default = {"msg": message, "app_name": settings.LOGGING_APP_NAME}
         builtin = {field: getattr(record, field) for field in settings.LOGGING_FIELDS}
         dict_record = {**extra, **builtin, **default}
 

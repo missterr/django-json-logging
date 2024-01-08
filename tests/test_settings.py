@@ -1,5 +1,6 @@
 from django.utils.log import DEFAULT_LOGGING
 
+DEBUG = True
 SECRET_KEY = "fake-key"
 INSTALLED_APPS = [
     "django_json_logging",
@@ -11,7 +12,7 @@ LOGGING_APP_NAME = "test-app"
 LOGGING_LOGLEVEL = "INFO"
 LOGGING_SERIALIZER = "json"
 LOGGING_OPT_NON_STR_KEYS = True
-LOGGING_JSON_INDENT = 2
+LOGGING_JSON_INDENT = 0
 LOGGING_FIELDS = {
     "args",
     "asctime",
@@ -25,7 +26,6 @@ LOGGING_FIELDS = {
     "lineno",
     "module",
     "msecs",
-    "msg",
     "name",
     "pathname",
     "process",

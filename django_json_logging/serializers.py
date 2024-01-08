@@ -70,7 +70,9 @@ class JsonSerializer:
 
         Using standard json library.
         """
-        options = {"ensure_ascii": False, "indent": settings.LOGGING_JSON_INDENT}
+        options = {"ensure_ascii": False}
+        if settings.LOGGING_JSON_INDENT:
+            options.update(indent=settings.LOGGING_JSON_INDENT)
         return json.dumps(dict_record, **options)
 
 
