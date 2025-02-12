@@ -15,6 +15,13 @@ except ImportError:  # pragma: nocover
     orjson = None  # type: ignore
 
 
+def default(obj):
+    """A callback for not serializable objects."""
+    if hasattr(obj, "__str__"):
+        return str(obj)
+    raise TypeError
+
+
 class ORJsonSerializer:
     options = {
         "LOGGING_JSON_INDENT": getattr(orjson, "OPT_INDENT_2", 0) if settings.LOGGING_JSON_INDENT else 0,
@@ -48,7 +55,7 @@ class ORJsonSerializer:
         The library orjson returns a bytes not an str.
         """
         assert orjson is not None, "orjson must be installed to use ORJsonSerializer"
-        return str(cls.dumps()(dict_record), settings.LOGGING_ENCODING)
+        return str(cls.dumps()(dict_record, default=default), settings.LOGGING_ENCODING)
 
 
 class UJsonSerializer:
