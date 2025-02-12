@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "django-json-logger"
-version = "0.1.0"
+version = "0.1.1"
 description = "A Django app to logging in json format."
 readme = "README.md"
 authors = [{ name = "Maksim Kopytov", email = "misst3rr@gmail.com" }]
