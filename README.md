@@ -1,6 +1,10 @@
 # Description
 This library provides the ability of converting django logs to JSON.
 
+# Requirements
+- Python 3.11 or higher
+- Django 3.2 or higher
+
 # Installation
 Using standard Json library:
 ```shell
@@ -24,6 +28,27 @@ pip install django-json-logger[ujson]
 and add to Django settings `LOGGING_SERIALIZER="ujson"`
 
 **Note**:  If you're using zsh you need to escape square brackets: pip install ... \[ujson\]
+
+# Development
+
+## Testing
+The package is tested against multiple Python and Django versions using nox:
+
+- Python versions: 3.11, 3.12
+- Django versions: 3.2, 4.2, 5.1
+
+To run the tests:
+
+```shell
+# Install development dependencies
+pip install -e ".[dev]"
+
+# Run tests with nox
+nox
+
+# Run tests for specific environment
+nox -s "tests-3.11(django='django>=4.2,<4.3')"
+```
 
 # Usage
 ### Django setup
