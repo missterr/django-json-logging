@@ -12,18 +12,19 @@ license = { file = "LICENSE" }
 classifiers = [
     "License :: Freeware",
     "Framework :: Django",
-    "Framework :: Django :: 3.0",
-    "Framework :: Django :: 3.1",
     "Framework :: Django :: 3.2",
     "Framework :: Django :: 4",
     "Framework :: Django :: 4.1",
     "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5",
+    "Framework :: Django :: 5.1",
+    "Framework :: Django :: 5.5",
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
     "django >= 3.0",
@@ -31,7 +32,7 @@ dependencies = [
 requires-python = ">=3.8"
 
 [project.optional-dependencies]
-dev = ["black", "isort", "orjson", "ujson"]
+dev = ["black", "isort", "orjson", "ujson", "nox"]
 orjson = ["orjson>=3.4.3",]
 ujson = ["ujson>=4.2.0",]
 
